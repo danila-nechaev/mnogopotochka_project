@@ -1,0 +1,37 @@
+version: '3'
+services:
+  web: #4
+    build: .
+    ports:
+      - "5050:5050"
+    volumes:
+      - .:/app
+    command: python backend/app.py
+  
+  bot: #3
+    build: .
+    command: python backend/bot.py
+
+  collector: #2
+    build: .
+    command: python scripts/data_collector.py
+  
+  postgres_db: #1
+    image: postgres:latest 
+    container_name: pg_db_container
+    environment:
+      POSTGRES_DB: weather_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+
+volumes:
+  pg_db_data:
+    name: pg_db_data
